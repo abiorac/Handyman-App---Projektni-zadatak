@@ -1,0 +1,57 @@
+.garaza-bg {
+  min-height: 100vh;
+  padding-top: 60px;
+  background-color: #121212;
+  color: white;
+}
+
+.vehicle-card {
+  background-color: #1a1a1a !important;
+  border: 1px solid #282828 !important;
+  border-radius: 15px !important;
+  transition: 0.3s ease-in-out;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-8px);
+  background-color: #1f1f1f !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5) !important;
+}
+
+.veh-info {
+  color: #aaaaaa;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+}
+
+/* Stilovi za inpute u tamnom modu */
+.MuiFilledInput-root {
+  background-color: #222 !important;
+  border-radius: 8px !important;
+}
+
+.MuiFilledInput-root:before, .MuiFilledInput-root:after {
+  display: none;
+}
+
+.MuiInputLabel-root {
+  color: #888 !important;
+}
+
+.MuiInputLabel-root.Mui-focused {
+  color: #ff1717 !important;
+}
+
+.vehicle-card-large {
+  background-color: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  border-radius: 20px !important;
+  min-height: 320px; /* Veća visina kartice */
+  transition: 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+.vehicle-card-large:hover {
+  border-color: #ff1717 !important;
+  transform: translateY(-5px);
+}

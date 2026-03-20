@@ -1,0 +1,134 @@
+.zarada-bg {
+  padding-top: 40px;
+  background-color: #121212;
+}
+
+.page-title-red {
+  color: #ff1717 !important;
+  font-weight: 800 !important;
+}
+
+.currency-toggle {
+  background-color: #1a1a1a !important;
+  border: 1px solid #333 !important;
+}
+
+.currency-toggle .MuiToggleButton-root {
+  color: #888 !important;
+  border: none !important;
+  padding: 5px 15px !important;
+}
+
+.currency-toggle .Mui-selected {
+  background-color: #ff1717 !important;
+  color: white !important;
+}
+
+/* Selektor sa crvenim okvirom umesto plavog */
+.month-select-red {
+  background-color: #1a1a1a !important;
+  color: white !important;
+  border: 1px solid #333 !important;
+  min-width: 180px;
+}
+
+.month-select-red .MuiOutlinedInput-notchedOutline {
+  border-color: #333 !important;
+}
+
+.month-select-red.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #ff1717 !important; /* Crvena boja pri kliku */
+}
+
+.finance-card-new {
+  background-color: #1a1a1a !important;
+  border: 1px solid #282828 !important;
+  border-radius: 15px !important;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.profit-border { border-bottom: 4px solid #4caf50 !important; }
+.expense-border { border-bottom: 4px solid #f44336 !important; }
+
+/* Čist profit - sada ZELENA */
+.balance-fill-green { 
+  background-color: #2e7d32 !important; 
+  border: none !important;
+  box-shadow: 0 10px 20px rgba(46, 125, 50, 0.2) !important;
+}
+
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transaction-item {
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #222;
+  transition: 0.2s;
+}
+
+.transaction-item:hover {
+  background-color: #1f1f1f;
+  border-color: #333;
+}
+
+.trans-naslov {
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.trans-datum {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.trans-zarada {
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.trans-trosak {
+  color: #f44336;
+  font-size: 0.85rem;
+}
+
+/* Centriranje kartica i fiksna širina za stabilnost */
+.finance-card-new {
+  background-color: #1a1a1a !important;
+  border: 1px solid #282828 !important;
+  border-radius: 15px !important;
+  text-align: center;
+  min-width: 250px; /* Osigurava da su kartice uvek iste širine */
+}
+
+/* Stil za selektore sa crvenim fokusom */
+.month-select-red {
+  background-color: #1a1a1a !important;
+  color: white !important;
+  min-width: 140px !important;
+}
+
+.month-select-red .MuiOutlinedInput-notchedOutline {
+  border-color: #333 !important;
+}
+
+.month-select-red.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #ff1717 !important;
+}
+
+/* Zelena boja za Čist Profit */
+.balance-fill-green { 
+  background-color: #2e7d32 !important; 
+  border: none !important;
+  box-shadow: 0 10px 20px rgba(46, 125, 50, 0.2) !important;
+}

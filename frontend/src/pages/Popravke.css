@@ -1,0 +1,73 @@
+.popravke-bg {
+  min-height: 100vh;
+  background-color: #121212;
+  color: white;
+}
+
+/* Osnovni kontejner kalendara */
+.custom-calendar {
+  background-color: #272727 !important; /* Nešto svetlija siva od pozadine sajta */
+  color: white !important;
+  border: 1px solid #333 !important;
+  border-radius: 15px !important;
+  font-family: 'Roboto', sans-serif !important;
+  width: 100% !important;
+  max-width: 450px !important;
+  padding: 15px !important;
+  box-shadow: 0px 4px 20px rgba(255, 23, 23, 0.2) !important;
+}
+
+/* Nazivi dana (MON, TUE...) */
+.react-calendar__month-view__weekdays {
+  color: #ff1717 !important; /* Crvena boja za dane u nedelji */
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  text-decoration: none !important;
+}
+
+/* Svi brojevi datuma */
+.react-calendar__tile {
+  color: #ffffff !important; /* Čisto bela boja za brojeve */
+  font-weight: 500 !important;
+  height: 50px !important;
+}
+
+/* Vikendi - da budu blago drugačiji ali vidljivi */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #444 !important; /* Datumi iz prošlog/sledećeg meseca */
+}
+
+/* Navigacija (strelice i mesec/godina na vrhu) */
+.react-calendar__navigation button {
+  color: #ffffff !important;
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #333 !important;
+  color: #ff1717 !important;
+}
+
+/* Danasnji dan */
+.react-calendar__tile--now {
+  background: #333 !important;
+  border: 1px solid #ff1717 !important;
+  color: #ff1717 !important;
+  border-radius: 8px !important;
+}
+
+/* Selektovani datum (crveni krug/kvadrat) */
+.react-calendar__tile--active {
+  background: #ff1717 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0px 0px 10px rgba(255, 23, 23, 0.6) !important;
+}
+
+/* Hover efekat preko brojeva */
+.react-calendar__tile:enabled:hover {
+  background-color: #333 !important;
+  border-radius: 8px !important;
+}

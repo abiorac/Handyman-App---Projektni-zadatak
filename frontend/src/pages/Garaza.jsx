@@ -38,7 +38,6 @@ function Garaza() {
   };
 
   const handleSave = () => {
-    // Provera za sva polja uključujući razdvojenu marku i model
     if (!novoVozilo.marka || !novoVozilo.model || !novoVozilo.registracija || !novoVozilo.potrosnja) {
       alert("Sva polja moraju biti popunjena!");
       return;
@@ -50,13 +49,12 @@ function Garaza() {
       return;
     }
 
-    // Pronalaženje cene u pozadini iako se u meniju vidi samo naziv
     const gorivoInfo = GORIVA.find(g => g.label === novoVozilo.gorivo);
     const cena = gorivoInfo ? gorivoInfo.cena : 0;
     
+    // Šaljemo podatke u DataContext
     dodajVozilo({ 
       ...novoVozilo, 
-      id: Date.now(), 
       cenaGoriva: cena 
     });
 
@@ -65,8 +63,8 @@ function Garaza() {
   };
 
   return (
-    <Box className="garaza-bg">
-      <Container maxWidth="lg" sx={{ pt: 4 }}>
+    <Box className="garaza-bg" sx={{ minHeight: '100vh', bgcolor: '#121212', pb: 5 }}>
+      <Container maxWidth="lg" sx={{ pt: 10 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 5, alignItems: 'center' }}>
           <Typography variant="h3" sx={{ color: '#ff1717', fontWeight: 800 }}>Moja Garaža</Typography>
           <Button 
@@ -85,7 +83,10 @@ function Garaza() {
             return (
               <Grid item xs={12} md={6} lg={4} key={v.id}>
                 <Card className="vehicle-card-large" sx={{ 
-                  borderLeft: status === 'skoro' ? '8px solid #ff9800' : '8px solid #ff1717' 
+                  bgcolor: '#1a1a1a',
+                  color: 'white',
+                  borderLeft: status === 'skoro' ? '8px solid #ff9800' : '8px solid #ff1717',
+                  position: 'relative'
                 }}>
                   <CardContent sx={{ p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -100,11 +101,13 @@ function Garaza() {
                     </Typography>
 
                     <Box sx={{ borderTop: '1px solid #333', pt: 2, mt: 2 }}>
-                      <Typography sx={{ color: '#aaa', fontSize: '1.1rem' }}>Gorivo: <strong>{v.gorivo}</strong></Typography>
-                      <Typography sx={{ color: '#aaa', fontSize: '1.1rem', mb: 2 }}>Potrošnja: <strong>{v.potrosnja} L/100km</strong></Typography>
+                      {/* Backend nekad šalje cena_goriva umesto gorivo, pa dodajemo zaštitu */}
+                      <Typography sx={{ color: '#aaa', fontSize: '1.1rem', mb: 1 }}>
+                        Potrošnja: <strong>{v.potrosnja} L/100km</strong>
+                      </Typography>
                       
                       <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', bgcolor: '#222', p: 1, borderRadius: 1 }}>
-                        Registracija: {v.registracija}
+                        Registracija: {v.registracija || "Nije uneto"}
                       </Typography>
 
                       {status === 'skoro' && (
@@ -129,27 +132,22 @@ function Garaza() {
           <DialogContent>
             <TextField fullWidth label="Marka" margin="normal" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={(e) => setNovoVozilo({...novoVozilo, marka: e.target.value})} />
             <TextField fullWidth label="Model" margin="normal" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={(e) => setNovoVozilo({...novoVozilo, model: e.target.value})} />
-            
             <TextField fullWidth label="Potrošnja (L/100km)" type="number" margin="normal" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={(e) => setNovoVozilo({...novoVozilo, potrosnja: e.target.value})} />
             
             <TextField select fullWidth label="Gorivo" margin="normal" variant="filled" sx={{ bgcolor: '#222', '& .MuiSelect-select': { color: 'white' } }} value={novoVozilo.gorivo} onChange={(e) => setNovoVozilo({...novoVozilo, gorivo: e.target.value})}>
               {GORIVA.map(g => (
-                <MenuItem key={g.label} value={g.label}>
-                  {g.label}
-                </MenuItem>
+                <MenuItem key={g.label} value={g.label}>{g.label}</MenuItem>
               ))}
             </TextField>
 
             <TextField 
               fullWidth type="date" label="Datum registracije" margin="normal" variant="filled" 
               InputLabelProps={{ shrink: true }} 
-              sx={{ bgcolor: '#222', input: { color: 'white'}, '& input::-webkit-calendar-picker-indicator': {
-                filter: 'invert(1)', 
-                cursor: 'pointer'
-                },
-                '& .MuiFilledInput-root': {
-                colorScheme: 'dark', 
-              } }} 
+              sx={{ 
+                bgcolor: '#222', 
+                input: { color: 'white' },
+                '& input::-webkit-calendar-picker-indicator': { filter: 'invert(1)' } 
+              }} 
               onChange={(e) => setNovoVozilo({...novoVozilo, registracija: e.target.value})} 
             />
           </DialogContent>

@@ -14,22 +14,29 @@ function Popravke() {
   });
 
   const handleSave = () => {
+    // Pronalazimo auto da bismo uzeli potrošnju i cenu goriva iz baze
     const auto = vozila.find(v => v.id === novaPopravka.voziloId);
     let trosakGoriva = 0;
+    
     if (auto) {
-      trosakGoriva = (Number(novaPopravka.km) / 100) * Number(auto.potrosnja) * Number(auto.cenaGoriva);
+      // Backend šalje cena_goriva, pa moramo proveriti oba naziva za svaki slučaj
+      const cena = auto.cena_goriva || auto.cenaGoriva || 0;
+      const potrosnja = auto.potrosnja || 0;
+      trosakGoriva = (Number(novaPopravka.km) / 100) * Number(potrosnja) * Number(cena);
     }
+
     const ukupniTrosak = Number(novaPopravka.dodatniTrosak) + trosakGoriva;
     const profit = Number(novaPopravka.zarada) - ukupniTrosak;
 
+    // Šaljemo podatke u bazu preko DataContext-a
     dodajPopravku({
       ...novaPopravka,
-      id: Date.now(),
       datum: datum.toDateString(),
       trosakGoriva,
-      ukupniTrosak,
+      ukupniTrosak, // Ovo će u bazi biti mapirano na dodatni_trosak ili profit zavisno od tvoje tabele
       profit
     });
+
     setOpen(false);
     setNovaPopravka({ opis: '', voziloId: '', km: 0, zarada: 0, dodatniTrosak: 0 });
   };
@@ -48,11 +55,7 @@ function Popravke() {
         </Box>
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Button 
-            variant="contained" 
-            sx={{ bgcolor: '#ff1717', fontWeight: 'bold', px: 4 }}
-            onClick={() => setOpen(true)}
-          >
+          <Button variant="contained" sx={{ bgcolor: '#ff1717', fontWeight: 'bold', px: 4 }} onClick={() => setOpen(true)}>
             DODAJ POPRAVKU
           </Button>
         </Box>
@@ -69,10 +72,11 @@ function Popravke() {
               <CardContent>
                 <Typography variant="h6" sx={{ color: '#ff1717' }}>{p.opis}</Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                  <Typography>Zarada: {p.zarada} din</Typography>
-                  <Typography>Trošak: {p.ukupniTrosak.toFixed(0)} din</Typography>
-                  <Typography sx={{ fontWeight: 'bold', color: p.profit >= 0 ? '#4caf50' : '#ff1717' }}>
-                    Profit: {p.profit.toFixed(0)} din
+                  <Typography>Zarada: {Number(p.zarada || 0)} din</Typography>
+                  {/* Koristimo Number() i provere da sprečimo "toFixed" grešku */}
+                  <Typography>Trošak: {Number(p.dodatni_trosak || p.ukupniTrosak || 0).toFixed(0)} din</Typography>
+                  <Typography sx={{ fontWeight: 'bold', color: (p.profit || 0) >= 0 ? '#4caf50' : '#ff1717' }}>
+                    Profit: {Number(p.profit || 0).toFixed(0)} din
                   </Typography>
                 </Box>
               </CardContent>
@@ -80,6 +84,7 @@ function Popravke() {
           ))
         )}
 
+        {/* DIALOG OSTAJE ISTI KAO TVOJ */}
         <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ sx: { bgcolor: '#1a1a1a', color: 'white', minWidth: '350px' } }}>
           <DialogTitle sx={{ color: '#ff1717', fontWeight: 'bold' }}>Nova Popravka</DialogTitle>
           <DialogContent>
@@ -87,7 +92,7 @@ function Popravke() {
             <TextField select fullWidth label="Auto" margin="dense" variant="filled" sx={{ bgcolor: '#222', '& .MuiSelect-select': { color: 'white' } }} value={novaPopravka.voziloId} onChange={e => setNovaPopravka({...novaPopravka, voziloId: e.target.value})}>
               {vozila.map(v => <MenuItem key={v.id} value={v.id}>{v.marka} {v.model}</MenuItem>)}
             </TextField>
-            <TextField fullWidth label="Kilometraža (put do klijenta)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, km: e.target.value})} />
+            <TextField fullWidth label="Kilometraža" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, km: e.target.value})} />
             <TextField fullWidth label="Zarada (din)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, zarada: e.target.value})} />
             <TextField fullWidth label="Dodatni troškovi" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, dodatniTrosak: e.target.value})} />
           </DialogContent>

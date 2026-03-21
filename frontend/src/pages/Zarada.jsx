@@ -11,7 +11,6 @@ import { useData } from '../context/DataContext';
 function Zarada() {
   const { popravke } = useData();
   const [valuta, setValuta] = useState('RSD');
-  // Postavljamo "all" kao početnu vrednost ili broj meseca
   const [mesec, setMesec] = useState("all"); 
   const [godina, setGodina] = useState(new Date().getFullYear());
 
@@ -20,21 +19,23 @@ function Zarada() {
     "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"
   ];
 
-  // FILTRIRANJE: Provera da li je izabran specifičan mesec ili "Cela godina"
+  // FILTRIRANJE: Dodata provera da li p.datum postoji pre kreiranja Date objekta
   const filtriranePopravke = popravke.filter(p => {
+    if (!p.datum) return false;
     const d = new Date(p.datum);
     const istaGodina = d.getFullYear() === godina;
     const istiMesec = mesec === "all" || d.getMonth() === mesec;
     return istaGodina && istiMesec;
   });
 
-  // Kalkulacija sa zaštitom od NaN
+  // KALKULACIJA: Mapiramo nazive iz baze (dodatni_trosak)
   const ukupnaZarada = filtriranePopravke.reduce((acc, p) => acc + Number(p.zarada || 0), 0);
-  const ukupniTroskovi = filtriranePopravke.reduce((acc, p) => acc + Number(p.ukupniTrosak || 0), 0);
+  const ukupniTroskovi = filtriranePopravke.reduce((acc, p) => acc + Number(p.dodatni_trosak || p.ukupniTrosak || 0), 0);
   const cistProfit = ukupnaZarada - ukupniTroskovi;
 
   const formatiraj = (vrednost) => {
-    const iznos = valuta === 'EUR' ? (vrednost / 117).toFixed(2) : vrednost.toLocaleString('sr-RS');
+    const broj = Number(vrednost || 0);
+    const iznos = valuta === 'EUR' ? (broj / 117).toFixed(2) : broj.toLocaleString('sr-RS');
     return `${iznos} ${valuta}`;
   };
 
@@ -54,35 +55,25 @@ function Zarada() {
           </ToggleButtonGroup>
         </Box>
 
-        {/* Selektori sa dodatnom opcijom "Cela godina" */}
         <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
           <TextField 
-            select 
-            size="small" 
-            value={mesec} 
+            select size="small" value={mesec} 
             onChange={(e) => setMesec(e.target.value)} 
             sx={{ bgcolor: '#222', borderRadius: 1, width: 180, '& .MuiSelect-select': { color: 'white' } }}
           >
             <MenuItem value="all">Cela godina</MenuItem>
-            {meseciLista.map((m, i) => (
-              <MenuItem key={i} value={i}>{m}</MenuItem>
-            ))}
+            {meseciLista.map((m, i) => <MenuItem key={i} value={i}>{m}</MenuItem>)}
           </TextField>
           
           <TextField 
-            select 
-            size="small" 
-            value={godina} 
-            onChange={(e) => setGodina(e.target.value)} 
+            select size="small" value={godina} 
+            onChange={(e) => setGodina(Number(e.target.value))} 
             sx={{ bgcolor: '#222', borderRadius: 1, width: 120, '& .MuiSelect-select': { color: 'white' } }}
           >
-            {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(g => (
-              <MenuItem key={g} value={g}>{g}</MenuItem>
-            ))}
+            {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(g => <MenuItem key={g} value={g}>{g}</MenuItem>)}
           </TextField>
         </Box>
 
-        {/* Centrirane kartice */}
         <Grid container spacing={3} sx={{ mb: 6 }} justifyContent="center">
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ bgcolor: '#1a1a1a', color: '#4caf50', border: '1px solid #333', height: '100%' }}>
@@ -125,7 +116,7 @@ function Zarada() {
               </Box>
               <Box sx={{ textAlign: 'right' }}>
                 <Typography sx={{ color: '#4caf50', fontWeight: 'bold' }}>+{formatiraj(p.zarada)}</Typography>
-                <Typography sx={{ color: '#ff1717', fontSize: '0.85rem' }}>Troškovi: {formatiraj(p.ukupniTrosak)}</Typography>
+                <Typography sx={{ color: '#ff1717', fontSize: '0.85rem' }}>Troškovi: {formatiraj(p.dodatni_trosak || p.ukupniTrosak || 0)}</Typography>
               </Box>
             </Box>
           ))

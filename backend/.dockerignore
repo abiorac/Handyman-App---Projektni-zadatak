@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+baza.db
+venv
+.dockerignore
+Dockerfile

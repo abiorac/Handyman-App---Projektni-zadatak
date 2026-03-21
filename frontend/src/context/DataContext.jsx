@@ -1,58 +1,70 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-  // 1. Korisnik - null znači da niko nije ulogovan
   const [user, setUser] = useState(null);
-
-  // 2. Lista vozila - postavljena na prazan niz
   const [vozila, setVozila] = useState([]);
-
-  // 3. Lista popravki za stranicu Zarada
   const [popravke, setPopravke] = useState([]);
 
-  // Funkcija za LOGOUT
+  useEffect(() => {
+    if (user && user.id) osveziPodatke();
+  }, [user]);
+
+  const osveziPodatke = async () => {
+    if (!user || !user.id) return;
+    try {
+      const resVozila = await fetch(`http://localhost:5000/api/vozila/${user.id}`);
+      const dataVozila = await resVozila.json();
+      setVozila(dataVozila);
+
+      const resPopravke = await fetch(`http://localhost:5000/api/popravke/${user.id}`);
+      const dataPopravke = await resPopravke.json();
+      setPopravke(dataPopravke);
+    } catch (err) { console.error(err); }
+  };
+
+  // DODATA FUNKCIJA ZA LOGOUT
   const logout = () => {
     setUser(null);
+    setVozila([]);
+    setPopravke([]);
   };
 
-  // Funkcija za dodavanje novog vozila
-  const dodajVozilo = (novo) => {
-    setVozila((prevVozila) => [...prevVozila, { ...novo, id: Date.now() }]);
+  const dodajVozilo = async (v) => {
+    await fetch('http://localhost:5000/api/vozila', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        ...v, 
+        user_id: user.id,
+        cena_goriva: v.cenaGoriva 
+      })
+    });
+    osveziPodatke();
   };
 
-  // Funkcija za BRISANJE vozila
-  const obrisiVozilo = (id) => {
-    setVozila((prevVozila) => prevVozila.filter(v => v.id !== id));
+  const obrisiVozilo = async (id) => {
+    await fetch(`http://localhost:5000/api/vozila/${id}`, { method: 'DELETE' });
+    osveziPodatke();
   };
 
-  // Funkcija za dodavanje popravke
-  const dodajPopravku = (nova) => {
-    setPopravke((prevPopravke) => [nova, ...prevPopravke]);
+  const dodajPopravku = async (p) => {
+    await fetch('http://localhost:5000/api/popravke', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...p, user_id: user.id, dodatni_trosak: p.dodatniTrosak })
+    });
+    osveziPodatke();
   };
 
   return (
     <DataContext.Provider value={{ 
-      user,
-      setUser,
-      logout,
-      vozila, 
-      dodajVozilo, 
-      obrisiVozilo, 
-      popravke, 
-      dodajPopravku 
+      user, setUser, vozila, dodajVozilo, obrisiVozilo, 
+      popravke, dodajPopravku, logout // IZVEZENO OVDE
     }}>
       {children}
     </DataContext.Provider>
   );
 };
-
-// Custom hook za lakše korišćenje podataka
-export const useData = () => {
-  const context = useContext(DataContext);
-  if (!context) {
-    throw new Error("useData mora biti korišćen unutar DataProvider-a");
-  }
-  return context;
-};
+export const useData = () => useContext(DataContext);

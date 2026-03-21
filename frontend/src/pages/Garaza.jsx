@@ -101,7 +101,6 @@ function Garaza() {
                     </Typography>
 
                     <Box sx={{ borderTop: '1px solid #333', pt: 2, mt: 2 }}>
-                      {/* Backend nekad šalje cena_goriva umesto gorivo, pa dodajemo zaštitu */}
                       <Typography sx={{ color: '#aaa', fontSize: '1.1rem', mb: 1 }}>
                         Potrošnja: <strong>{v.potrosnja} L/100km</strong>
                       </Typography>

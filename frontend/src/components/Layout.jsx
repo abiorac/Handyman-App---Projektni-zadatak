@@ -6,7 +6,7 @@ const Layout = () => {
   return (
     <Box sx={{ flexGrow: 1, bgcolor: '#121212' }}>
       <AppBar 
-        position="fixed" // Promenjeno u fixed da bi uvek bio na vrhu
+        position="fixed"
         sx={{ 
           bgcolor: '#000', 
           borderBottom: '1px solid rgba(255, 23, 23, 0.5)', 

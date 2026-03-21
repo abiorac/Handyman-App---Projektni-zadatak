@@ -24,7 +24,6 @@ def login():
     user = get_user(data.get('username'), data.get('password'))
     
     if user:
-        # Vraćamo rečnik koji React očekuje
         return jsonify({
             "id": user['id'], 
             "username": user['username']

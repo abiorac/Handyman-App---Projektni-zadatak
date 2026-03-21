@@ -13,7 +13,12 @@ function Home() {
   const { vozila, dodajPopravku, user } = useData();
   const [open, setOpen] = useState(false);
   const [novaPopravka, setNovaPopravka] = useState({
-    opis: '', voziloId: '', km: 0, zarada: 0, dodatniTrosak: 0, datum: new Date().toISOString().split('T')[0]
+    opis: '', 
+    voziloId: '', 
+    km: '', 
+    zarada: '', 
+    dodatniTrosak: '', 
+    datum: new Date().toISOString().split('T')[0]
   });
 
   const isUlogovan = !!user;
@@ -23,36 +28,47 @@ function Home() {
     let trosakGoriva = 0;
     
     if (auto) {
-      trosakGoriva = (Number(novaPopravka.km) / 100) * Number(auto.potrosnja) * Number(auto.cenaGoriva);
+      // Usklađujemo nazive sa bazom (cena_goriva ili cenaGoriva)
+      const cena = Number(auto.cena_goriva || auto.cenaGoriva || 0);
+      const potrosnja = Number(auto.potrosnja || 0);
+      trosakGoriva = (Number(novaPopravka.km) / 100) * potrosnja * cena;
     }
 
     const ukupniTrosak = Number(novaPopravka.dodatniTrosak) + trosakGoriva;
-    const profit = Number(novaPopravka.zarada) - ukupniTrosak;
+    const izracunatiProfit = Number(novaPopravka.zarada) - ukupniTrosak;
 
+    // Šaljemo podatke koristeći nazive koje backend očekuje (dodatniTrosak i profit)
     dodajPopravku({
-      ...novaPopravka,
-      id: Date.now(),
-      datum: new Date(novaPopravka.datum).toDateString(),
-      trosakGoriva,
-      ukupniTrosak,
-      profit
+      opis: novaPopravka.opis,
+      voziloId: novaPopravka.voziloId,
+      km: Number(novaPopravka.km),
+      zarada: Number(novaPopravka.zarada),
+      dodatniTrosak: ukupniTrosak, 
+      profit: izracunatiProfit,
+      datum: new Date(novaPopravka.datum).toDateString()
     });
 
     setOpen(false);
-    setNovaPopravka({ opis: '', voziloId: '', km: 0, zarada: 0, dodatniTrosak: 0, datum: new Date().toISOString().split('T')[0] });
+    // Resetujemo formu
+    setNovaPopravka({ 
+      opis: '', 
+      voziloId: '', 
+      km: '', 
+      zarada: '', 
+      dodatniTrosak: '', 
+      datum: new Date().toISOString().split('T')[0] 
+    });
   };
 
   return (
     <Box className="home-bg">
       <Container maxWidth="lg" sx={{ textAlign: 'center', pt: 10 }}>
-        {/* Naslov i podnaslov zajednički za sve */}
         <Typography variant="h1" className="home-title">Handyman App</Typography>
         <Typography variant="h5" sx={{ color: '#aaa', mb: 5 }}>
           Prati popravke, troškove i profit na jednom mestu.
         </Typography>
 
         {isUlogovan ? (
-          /* STANJE ZA ULOGOVANOG KORISNIKA */
           <>
             <Box sx={{ mb: 8 }}>
               <Button 
@@ -72,7 +88,6 @@ function Home() {
               </Button>
             </Box>
 
-            {/* Simetrične kartice istih dimenzija */}
             <Grid container spacing={4} justifyContent="center" alignItems="stretch">
               <Grid item xs={12} sm={6} md={4} sx={{ display: 'flex' }}>
                 <Card 
@@ -114,12 +129,8 @@ function Home() {
             </Grid>
           </>
         ) : (
-          /* STANJE ZA NEREGISTROVANOG / NEULOGOVANOG KORISNIKA */
           <Box sx={{ 
-            mt: 5, 
-            p: 8, 
-            border: '1px dashed #333', 
-            borderRadius: 8,
+            mt: 5, p: 8, border: '1px dashed #333', borderRadius: 8,
             bgcolor: 'rgba(255, 23, 23, 0.02)' 
           }}>
             <Typography variant="h3" sx={{ color: '#ff1717', mb: 2, fontWeight: 'bold' }}>
@@ -140,18 +151,17 @@ function Home() {
           </Box>
         )}
 
-        {/* Modal za novu popravku */}
         <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ sx: { bgcolor: '#1a1a1a', color: 'white', minWidth: '380px' } }}>
           <DialogTitle sx={{ color: '#ff1717', fontWeight: 'bold' }}>Nova Popravka</DialogTitle>
           <DialogContent>
             <TextField fullWidth type="date" label="Datum popravke" margin="dense" variant="filled" InputLabelProps={{ shrink: true }} sx={{ bgcolor: '#222', input: { color: 'white', colorScheme: 'dark' }, mb: 1 }} value={novaPopravka.datum} onChange={e => setNovaPopravka({...novaPopravka, datum: e.target.value})} />
-            <TextField fullWidth label="Tip popravke" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, opis: e.target.value})} />
-            <TextField select fullWidth label="Auto" margin="dense" variant="filled" sx={{ bgcolor: '#222', '& .MuiSelect-select': { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, voziloId: e.target.value})}>
+            <TextField fullWidth label="Tip popravke" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} value={novaPopravka.opis} onChange={e => setNovaPopravka({...novaPopravka, opis: e.target.value})} />
+            <TextField select fullWidth label="Auto" margin="dense" variant="filled" sx={{ bgcolor: '#222', '& .MuiSelect-select': { color: 'white' } }} value={novaPopravka.voziloId} onChange={e => setNovaPopravka({...novaPopravka, voziloId: e.target.value})}>
               {vozila.map(v => <MenuItem key={v.id} value={v.id}>{v.marka} {v.model}</MenuItem>)}
             </TextField>
-            <TextField fullWidth label="Kilometraža (put do klijenta)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, km: e.target.value})} />
-            <TextField fullWidth label="Zarada (din)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, zarada: e.target.value})} />
-            <TextField fullWidth label="Dodatni troškovi" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, dodatniTrosak: e.target.value})} />
+            <TextField fullWidth label="Kilometraža (put do klijenta)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} value={novaPopravka.km} onChange={e => setNovaPopravka({...novaPopravka, km: e.target.value})} />
+            <TextField fullWidth label="Zarada (din)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} value={novaPopravka.zarada} onChange={e => setNovaPopravka({...novaPopravka, zarada: e.target.value})} />
+            <TextField fullWidth label="Dodatni troškovi" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} value={novaPopravka.dodatniTrosak} onChange={e => setNovaPopravka({...novaPopravka, dodatniTrosak: e.target.value})} />
           </DialogContent>
           <DialogActions sx={{ p: 3 }}>
             <Button onClick={() => setOpen(false)} sx={{ color: '#888' }}>OTKAŽI</Button>

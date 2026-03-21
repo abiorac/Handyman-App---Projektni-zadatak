@@ -19,7 +19,7 @@ function Zarada() {
     "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"
   ];
 
-  // FILTRIRANJE: Dodata provera da li p.datum postoji pre kreiranja Date objekta
+
   const filtriranePopravke = popravke.filter(p => {
     if (!p.datum) return false;
     const d = new Date(p.datum);
@@ -28,7 +28,7 @@ function Zarada() {
     return istaGodina && istiMesec;
   });
 
-  // KALKULACIJA: Mapiramo nazive iz baze (dodatni_trosak)
+
   const ukupnaZarada = filtriranePopravke.reduce((acc, p) => acc + Number(p.zarada || 0), 0);
   const ukupniTroskovi = filtriranePopravke.reduce((acc, p) => acc + Number(p.dodatni_trosak || p.ukupniTrosak || 0), 0);
   const cistProfit = ukupnaZarada - ukupniTroskovi;

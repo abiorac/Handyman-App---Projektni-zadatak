@@ -54,7 +54,7 @@ function Zarada() {
           </ToggleButtonGroup>
         </Box>
 
-        {/* Selektori sa dodatom opcijom "Cela godina" */}
+        {/* Selektori sa dodatnom opcijom "Cela godina" */}
         <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
           <TextField 
             select 

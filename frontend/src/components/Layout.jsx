@@ -17,7 +17,7 @@ const Layout = () => {
         <Container maxWidth="lg">
           <Toolbar sx={{ justifyContent: 'space-between' }}>
             <Typography variant="h6" component={Link} to="/" sx={{ 
-              color: '#ff1717', // Nova crvena
+              color: '#ff1717',
               textDecoration: 'none', 
               fontWeight: 'bold',
               fontSize: '1.5rem',

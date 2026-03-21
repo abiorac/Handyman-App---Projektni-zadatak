@@ -51,7 +51,7 @@
 .profit-border { border-bottom: 4px solid #4caf50 !important; }
 .expense-border { border-bottom: 4px solid #f44336 !important; }
 
-/* Čist profit - sada ZELENA */
+/* Čist profit */
 .balance-fill-green { 
   background-color: #2e7d32 !important; 
   border: none !important;
@@ -108,7 +108,7 @@
   border: 1px solid #282828 !important;
   border-radius: 15px !important;
   text-align: center;
-  min-width: 250px; /* Osigurava da su kartice uvek iste širine */
+  min-width: 250px;
 }
 
 /* Stil za selektore sa crvenim fokusom */

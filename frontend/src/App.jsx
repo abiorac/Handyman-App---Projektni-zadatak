@@ -1,24 +1,28 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { DataProvider } from './context/DataContext';
-import Layout from './components/Layout'; 
-import Home from './pages/Home';         
-import Zarada from './pages/Zarada';
-import Garaza from './pages/Garaza';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
 import Popravke from './pages/Popravke';
+import Garaza from './pages/Garaza';
+import Zarada from './pages/Zarada';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { DataProvider } from './context/DataContext';
 
 function App() {
   return (
     <DataProvider>
-      <BrowserRouter>
-        <Layout /> {/* Ovo se sada prikazuje na svakoj stranici */}
+      <Router>
+        <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} /> 
-          <Route path="/zarada" element={<Zarada />} />
-          <Route path="/garaza" element={<Garaza />} />
+          <Route path="/" element={<Home />} />
           <Route path="/popravke" element={<Popravke />} />
+          <Route path="/garaza" element={<Garaza />} />
+          <Route path="/zarada" element={<Zarada />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </DataProvider>
   );
 }

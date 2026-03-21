@@ -127,7 +127,6 @@ function Garaza() {
         <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ sx: { bgcolor: '#1a1a1a', color: 'white' } }}>
           <DialogTitle sx={{ color: '#ff1717', fontWeight: 'bold' }}>Novo Vozilo</DialogTitle>
           <DialogContent>
-            {/* Vraćena razdvojena polja za Marku i Model */}
             <TextField fullWidth label="Marka" margin="normal" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={(e) => setNovoVozilo({...novoVozilo, marka: e.target.value})} />
             <TextField fullWidth label="Model" margin="normal" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={(e) => setNovoVozilo({...novoVozilo, model: e.target.value})} />
             
@@ -145,11 +144,11 @@ function Garaza() {
               fullWidth type="date" label="Datum registracije" margin="normal" variant="filled" 
               InputLabelProps={{ shrink: true }} 
               sx={{ bgcolor: '#222', input: { color: 'white'}, '& input::-webkit-calendar-picker-indicator': {
-                filter: 'invert(1)', // Pretvara crnu ikonicu u belu da bi se videla na tamnoj pozadini
+                filter: 'invert(1)', 
                 cursor: 'pointer'
                 },
                 '& .MuiFilledInput-root': {
-                colorScheme: 'dark', // Govori brauzeru da koristi tamnu temu za sam kalendar
+                colorScheme: 'dark', 
               } }} 
               onChange={(e) => setNovoVozilo({...novoVozilo, registracija: e.target.value})} 
             />

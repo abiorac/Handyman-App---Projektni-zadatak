@@ -32,7 +32,7 @@
   height: 50px !important;
 }
 
-/* Vikendi - da budu blago drugačiji ali vidljivi */
+/* Vikendi - da budu drugačiji ali vidljivi */
 .react-calendar__month-view__days__day--neighboringMonth {
   color: #444 !important; /* Datumi iz prošlog/sledećeg meseca */
 }

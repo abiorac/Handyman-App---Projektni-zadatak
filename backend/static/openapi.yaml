@@ -1,0 +1,240 @@
+openapi: 3.0.0
+info:
+  title: Handyman App API
+  description: API dokumentacija za aplikaciju Handyman App. Ovaj API služi za upravljanje korisnicima, vozilima i popravkama.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Lokalni razvojni server
+
+components:
+  schemas:
+    Korisnik:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+    
+    VoziloInput:
+      type: object
+      required:
+        - user_id
+        - marka
+        - model
+      properties:
+        user_id:
+          type: integer
+        marka:
+          type: string
+          example: "Volkswagen"
+        model:
+          type: string
+          example: "Golf 7"
+        potrosnja:
+          type: number
+          example: 6.5
+        cena_goriva:
+          type: number
+          example: 200.5
+        registracija:
+          type: string
+          description: "Datum isteka registracije vozila (format: MM-DD-YYYY)"
+          example: "10-25-2026"
+          
+    Vozilo:
+      allOf:
+        - $ref: '#/components/schemas/VoziloInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+              
+    PopravkaInput:
+      type: object
+      required:
+        - user_id
+        - opis
+        - voziloId
+      properties:
+        user_id:
+          type: integer
+        opis:
+          type: string
+          example: "Servis bojlera"
+        voziloId:
+          type: integer
+          description: ID vozila koje je majstor koristio za prevoz do lokacije
+        km:
+          type: number
+          example: 15.5
+        zarada:
+          type: number
+          example: 5000
+        dodatniTrosak:
+          type: number
+          example: 500
+        datum:
+          type: string
+          example: "2026-05-07"
+        profit:
+          type: number
+          example: 4000
+          
+    Popravka:
+      allOf:
+        - $ref: '#/components/schemas/PopravkaInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+
+paths:
+  /api/register:
+    post:
+      summary: Registracija novog korisnika
+      tags:
+        - Autentifikacija
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: "korisnik1"
+                password:
+                  type: string
+                  example: "sifra123"
+      responses:
+        '201':
+          description: Uspešna registracija
+        '400':
+          description: Korisničko ime je već zauzeto
+
+  /api/login:
+    post:
+      summary: Prijava postojećeg korisnika
+      tags:
+        - Autentifikacija
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: "korisnik1"
+                password:
+                  type: string
+                  example: "sifra123"
+      responses:
+        '200':
+          description: Uspešna prijava (Vraća podatke korisnika)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Korisnik'
+        '400':
+          description: Podaci nisu poslati
+        '401':
+          description: Pogrešno korisničko ime ili lozinka
+
+  /api/vozila:
+    post:
+      summary: Dodavanje novog vozila
+      tags:
+        - Vozila
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoziloInput'
+      responses:
+        '201':
+          description: Vozilo uspešno dodato
+
+  /api/vozila/{user_id}:
+    get:
+      summary: Dobijanje svih vozila za određenog korisnika
+      tags:
+        - Vozila
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: ID korisnika čija vozila tražimo
+      responses:
+        '200':
+          description: Lista vozila
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vozilo'
+
+  /api/vozila/{vozilo_id}:
+    delete:
+      summary: Brisanje vozila
+      tags:
+        - Vozila
+      parameters:
+        - in: path
+          name: vozilo_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Vozilo uspešno obrisano
+
+  /api/popravke:
+    post:
+      summary: Unos nove popravke / posla
+      tags:
+        - Popravke
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PopravkaInput'
+      responses:
+        '201':
+          description: Popravka uspešno sačuvana
+
+  /api/popravke/{user_id}:
+    get:
+      summary: Dobijanje istorije popravki za korisnika
+      tags:
+        - Popravke
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista popravki
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Popravka'

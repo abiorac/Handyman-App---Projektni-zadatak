@@ -9,14 +9,112 @@ servers:
 
 components:
   schemas:
+
+    # ------------------------------------------------------------------
+    # KORISNIK - x-tablename govori OpenAlchemy-ju da napravi tabelu 'korisnici'
+    # ------------------------------------------------------------------
     Korisnik:
       type: object
+      x-tablename: korisnici
       properties:
         id:
           type: integer
+          x-primary-key: true
+          x-autoincrement: true
+          example: 1
         username:
           type: string
-    
+          example: "korisnik1"
+        password:
+          type: string
+          example: "sifra123"
+      required:
+        - username
+        - password
+
+    # ------------------------------------------------------------------
+    # VOZILO - vozilo koje majstor koristi za dolazak na posao
+    # ------------------------------------------------------------------
+    Vozilo:
+      type: object
+      x-tablename: vozila
+      properties:
+        id:
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+          example: 1
+        user_id:
+          type: integer
+          x-foreign-key: korisnici.id
+          description: ID korisnika (majstora) kome vozilo pripada
+        marka:
+          type: string
+          example: "Volkswagen"
+        model:
+          type: string
+          example: "Golf 7"
+        potrosnja:
+          type: number
+          example: 6.5
+        cena_goriva:
+          type: number
+          example: 200.5
+        registracija:
+          type: string
+          description: "Datum isteka registracije vozila (format: MM-DD-YYYY)"
+          example: "10-25-2026"
+      required:
+        - user_id
+        - marka
+        - model
+
+    # ------------------------------------------------------------------
+    # POPRAVKA - evidencija obavljenog posla 
+    # ------------------------------------------------------------------
+    Popravka:
+      type: object
+      x-tablename: popravke
+      properties:
+        id:
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
+          example: 1
+        user_id:
+          type: integer
+          x-foreign-key: korisnici.id
+          description: ID majstora koji je obavio posao
+        opis:
+          type: string
+          example: "Servis bojlera"
+        vozilo_id:
+          type: integer
+          x-foreign-key: vozila.id
+          description: ID vozila kojim je majstor stigao na lokaciju
+        km:
+          type: number
+          example: 15.5
+        zarada:
+          type: number
+          example: 5000
+        dodatni_trosak:
+          type: number
+          example: 500
+        datum:
+          type: string
+          example: "2026-05-07"
+        profit:
+          type: number
+          example: 4000
+      required:
+        - user_id
+        - opis
+        - vozilo_id
+
+    # ------------------------------------------------------------------
+    # INPUT SCHEMES - koriste se samo za validaciju zahteva (bez x-tablename)
+    # ------------------------------------------------------------------
     VoziloInput:
       type: object
       required:
@@ -42,15 +140,7 @@ components:
           type: string
           description: "Datum isteka registracije vozila (format: MM-DD-YYYY)"
           example: "10-25-2026"
-          
-    Vozilo:
-      allOf:
-        - $ref: '#/components/schemas/VoziloInput'
-        - type: object
-          properties:
-            id:
-              type: integer
-              
+
     PopravkaInput:
       type: object
       required:
@@ -81,14 +171,6 @@ components:
         profit:
           type: number
           example: 4000
-          
-    Popravka:
-      allOf:
-        - $ref: '#/components/schemas/PopravkaInput'
-        - type: object
-          properties:
-            id:
-              type: integer
 
 paths:
   /api/register:
@@ -96,6 +178,7 @@ paths:
       summary: Registracija novog korisnika
       tags:
         - Autentifikacija
+      operationId: api.register
       requestBody:
         required: true
         content:
@@ -123,6 +206,7 @@ paths:
       summary: Prijava postojećeg korisnika
       tags:
         - Autentifikacija
+      operationId: api.login
       requestBody:
         required: true
         content:
@@ -156,6 +240,7 @@ paths:
       summary: Dodavanje novog vozila
       tags:
         - Vozila
+      operationId: api.addVozilo
       requestBody:
         required: true
         content:
@@ -166,14 +251,15 @@ paths:
         '201':
           description: Vozilo uspešno dodato
 
-  /api/vozila/{user_id}:
+  /api/vozila/{id}:
     get:
       summary: Dobijanje svih vozila za određenog korisnika
       tags:
         - Vozila
+      operationId: api.getVozila
       parameters:
         - in: path
-          name: user_id
+          name: id
           required: true
           schema:
             type: integer
@@ -187,18 +273,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Vozilo'
-
-  /api/vozila/{vozilo_id}:
     delete:
       summary: Brisanje vozila
       tags:
         - Vozila
+      operationId: api.deleteVozilo
       parameters:
         - in: path
-          name: vozilo_id
+          name: id
           required: true
           schema:
             type: integer
+          description: ID vozila koje se briše
       responses:
         '200':
           description: Vozilo uspešno obrisano
@@ -208,6 +294,7 @@ paths:
       summary: Unos nove popravke / posla
       tags:
         - Popravke
+      operationId: api.addPopravka
       requestBody:
         required: true
         content:
@@ -223,6 +310,7 @@ paths:
       summary: Dobijanje istorije popravki za korisnika
       tags:
         - Popravke
+      operationId: api.getPopravke
       parameters:
         - in: path
           name: user_id

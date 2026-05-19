@@ -13,10 +13,18 @@ function Popravke() {
     opis: '', voziloId: '', km: 0, zarada: 0, dodatniTrosak: 0
   });
 
+  // Pomoćna funkcija koja rešava problem sa formatom YYYY-MM-DD
+  const formatirajDatum = (d) => {
+    const god = d.getFullYear();
+    const mesec = String(d.getMonth() + 1).padStart(2, '0');
+    const dan = String(d.getDate()).padStart(2, '0');
+    return `${god}-${mesec}-${dan}`;
+  };
+
   const handleSave = () => {
     const auto = vozila.find(v => v.id === novaPopravka.voziloId);
     let trosakGoriva = 0;
-    
+
     if (auto) {
       // Proveravamo oba naziva varijabli zbog kompatibilnosti sa bazom
       const cena = Number(auto.cena_goriva || auto.cenaGoriva || 0);
@@ -28,14 +36,14 @@ function Popravke() {
     const ukupniTrosak = Number(novaPopravka.dodatniTrosak) + trosakGoriva;
     const izracunatiProfit = Number(novaPopravka.zarada) - ukupniTrosak;
 
-    // Šaljemo podatke u DataContext
+
     dodajPopravku({
       opis: novaPopravka.opis,
       voziloId: novaPopravka.voziloId,
       km: Number(novaPopravka.km),
       zarada: Number(novaPopravka.zarada),
-      dodatniTrosak: ukupniTrosak, 
-      datum: datum.toDateString(),
+      dodatniTrosak: ukupniTrosak,
+      datum: formatirajDatum(datum),
       profit: izracunatiProfit
     });
 
@@ -43,7 +51,9 @@ function Popravke() {
     setNovaPopravka({ opis: '', voziloId: '', km: 0, zarada: 0, dodatniTrosak: 0 });
   };
 
-  const popravkeZaDan = popravke.filter(p => p.datum === datum.toDateString());
+  // Filter koji sada koristi funkciju formatirajDatum()
+  const trenutniDatumStr = formatirajDatum(datum);
+  const popravkeZaDan = popravke.filter(p => p.datum === trenutniDatumStr || p.datum === datum.toDateString());
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#121212', color: 'white', pt: 5 }}>
@@ -88,13 +98,13 @@ function Popravke() {
         <Dialog open={open} onClose={() => setOpen(false)} PaperProps={{ sx: { bgcolor: '#1a1a1a', color: 'white', minWidth: '350px' } }}>
           <DialogTitle sx={{ color: '#ff1717', fontWeight: 'bold' }}>Nova Popravka</DialogTitle>
           <DialogContent>
-            <TextField fullWidth label="Tip popravke" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, opis: e.target.value})} />
-            <TextField select fullWidth label="Auto" margin="dense" variant="filled" sx={{ bgcolor: '#222', '& .MuiSelect-select': { color: 'white' } }} value={novaPopravka.voziloId} onChange={e => setNovaPopravka({...novaPopravka, voziloId: e.target.value})}>
+            <TextField fullWidth label="Tip popravke" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({ ...novaPopravka, opis: e.target.value })} />
+            <TextField select fullWidth label="Auto" margin="dense" variant="filled" sx={{ bgcolor: '#222', '& .MuiSelect-select': { color: 'white' } }} value={novaPopravka.voziloId} onChange={e => setNovaPopravka({ ...novaPopravka, voziloId: e.target.value })}>
               {vozila.map(v => <MenuItem key={v.id} value={v.id}>{v.marka} {v.model}</MenuItem>)}
             </TextField>
-            <TextField fullWidth label="Kilometraža (put do klijenta)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, km: e.target.value})} />
-            <TextField fullWidth label="Zarada (din)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, zarada: e.target.value})} />
-            <TextField fullWidth label="Dodatni troškovi (delovi i ostalo)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({...novaPopravka, dodatniTrosak: e.target.value})} />
+            <TextField fullWidth label="Kilometraža (put do klijenta)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({ ...novaPopravka, km: e.target.value })} />
+            <TextField fullWidth label="Zarada (din)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({ ...novaPopravka, zarada: e.target.value })} />
+            <TextField fullWidth label="Dodatni troškovi (delovi i ostalo)" type="number" margin="dense" variant="filled" sx={{ bgcolor: '#222', input: { color: 'white' } }} onChange={e => setNovaPopravka({ ...novaPopravka, dodatniTrosak: e.target.value })} />
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpen(false)} sx={{ color: '#888' }}>OTKAŽI</Button>
